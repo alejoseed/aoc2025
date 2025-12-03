@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, vec};
 
 fn part_one(ranges: &Vec<(&str, &str)>) -> i64 {
     let mut invalid_ids_sum: i64 = 0;
@@ -22,18 +22,6 @@ fn part_one(ranges: &Vec<(&str, &str)>) -> i64 {
     return invalid_ids_sum;
 }
 
-// 11-22 still has two invalid IDs, 11 and 22.
-// 95-115 now has two invalid IDs, 99 and 111.
-// 998-1012 now has two invalid IDs, 999 and 1010.
-// 1188511880-1188511890 still has one invalid ID, 1188511885.
-// 222220-222224 still has one invalid ID, 222222.
-// 1698522-1698528 still contains no invalid IDs.
-// 446443-446449 still has one invalid ID, 446446.
-// 38593856-38593862 still has one invalid ID, 38593859.
-// 565653-565659 now has one invalid ID, 565656.
-// 824824821-824824827 now has one invalid ID, 824824824.
-// 2121212118-2121212124 now has one invalid ID, 2121212121.
-
 fn part_two(ranges: &Vec<(&str, &str)>) -> i64 {
     let mut invalid_ids_sum: i64 = 0;
 
@@ -43,14 +31,30 @@ fn part_two(ranges: &Vec<(&str, &str)>) -> i64 {
 
         while cur <= high {
             let cur_str: String = cur.to_string();
-            let mut cur_seq: &str = "";
+            let str_len = cur_str.len();
             
-            for char in cur_str.chars() {
+            let mut pair_size = 1;
+            while pair_size != str_len {
+                let parts = cur_str.chars().collect::<Vec<char>>();
+                let test = parts.chunks(pair_size.try_into().unwrap()).map(|c| c.iter().collect::<String>()).collect::<Vec<String>>();
                 
-            }
-            let mut sequences: HashSet<String> = HashSet::new();
+                let first_pair: String = test.first().expect("There should be at least one value").to_owned();
+                
+                let mut is_matching = true;
+                for value in test {
+                    if value != first_pair {
+                        is_matching = false;
+                        break;
+                    }
+                }
+                if is_matching {
+                    invalid_ids_sum += cur;
+                    break;
+                }
+                pair_size += 1;
 
-            
+            }
+            cur += 1;            
         }
     }
 
@@ -58,7 +62,7 @@ fn part_two(ranges: &Vec<(&str, &str)>) -> i64 {
 }
 
 fn main() {
-    let path = "/home/alejoseed/aoc2025/day2/src/1.input";
+    let path = "/home/alejoseed/Projects/aoc2025/day2/src/1.input";
     let file_buf = std::fs::read_to_string(path).expect("Could not read file");
     
     let mut ranges: Vec<(&str, &str)> = Vec::new();
