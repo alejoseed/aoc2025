@@ -28,11 +28,18 @@ fn part_two(ranges: &Vec<(&str, &str)>) -> i64 {
         let (low, high): (i64, i64) = (range.0.parse().unwrap(), range.1.parse().unwrap());
 
         for n in low..=high {
+
             let cur_str: String = n.to_string();
             let str_len = cur_str.len();
             
             let mut pair_size = 1;
+
             while pair_size != str_len {
+                if str_len % pair_size != 0 {
+                    pair_size += 1;
+                    continue;
+                }
+
                 let parts = cur_str.chars().collect::<Vec<char>>();
                 let test = parts.chunks(pair_size.try_into().unwrap()).map(|c| c.iter().collect::<String>()).collect::<Vec<String>>();
                 
