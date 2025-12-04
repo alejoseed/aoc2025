@@ -32,47 +32,37 @@ fn part_two(jolteons: &Vec<&str>) -> u64 {
     let mut total: u64 = 0;
     
     for jolteon in jolteons {
-        let mut stack: Vec<&str> = Vec::new();
+        let mut stack: Vec<String> = Vec::new();
         let max_length = 12;
-
         
         let mut idx = 0;
         let mut cur = 12;
         
         while stack.len() != max_length {
-            stack.push("0");
+            stack.push("0".to_string());
             let mut cur_idx = idx;
             let mut final_idx = 0;
             
             let char_vec: Vec<char> = jolteon.chars().collect();
-            while cur < char_vec.len() - cur_idx{
-                let head = stack.pop().unwrap();
+            while cur <= char_vec.len() - cur_idx {
+                let head: String = stack.pop().unwrap();
                 let head_num: u64 = head.parse().unwrap();
-                let cur_num: u64 = char_vec[cur_idx].into();
-
-                // if head_num < cur_num {
-                //     stack.append(char_vec[cur_idx].to_string().to_owned());
-                //     final_idx = cur_idx;
-                // } else {
-                //     stack.append(head)
-                // }
-                cur_idx += 1
-
+                let cur_str: String = char_vec[cur_idx].to_string();
+                let cur_num: u64 = cur_str.parse().unwrap();
+                
+                if head_num < cur_num {
+                    stack.push(cur_str);
+                    final_idx = cur_idx;
+                } else {
+                    stack.push(head)
+                }
+                cur_idx += 1;
             }
+            cur -= 1;
+            idx = final_idx + 1;
         }
-        let mut start_point = 0;
-        let bytes = jolteon.as_bytes();
-        
-        //iterate any amount of times to find the greatest possible number 
-        // with the cabiat that there should be 12 - i available chars to the right of the array.
-        while start_point + 1 != 13 {
-            
-        }
-
-        // There can only be at most 12 entries to the stack
-        for n in 0..12 {
-            
-        }
+        let result: u64 = stack.join("").parse().unwrap();
+        total += result;
     }
     return total;
 }
@@ -96,5 +86,7 @@ fn main() {
 
     println!("Total time for results {:?}", elapsed_total);
 
-    println!("{}", first_result)
+    println!("{}", first_result);
+    println!("{}", second_result)
+    
 }
