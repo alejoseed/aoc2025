@@ -87,7 +87,7 @@ fn part_two_optimized(jolteons: &Vec<&str>) -> u64 {
                 let head_num: u64 = stack.pop().unwrap();
                 let cur_char: char = char_vec[cur_idx];
                 let cur_num: u64 = cur_char.to_digit(10).unwrap() as u64;
-                
+
                 if head_num < cur_num {
                     stack.push(cur_num);
                     final_idx = cur_idx;
