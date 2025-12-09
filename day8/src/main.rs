@@ -44,7 +44,6 @@ impl DisjointSet {
                 self.parent[root_j] = root_i;
                 self.size[root_i] += self.size[root_j];
                 return Some(root_i);
-
             }
         }
         return None;
@@ -69,7 +68,7 @@ fn part_one(junc_boxes: &[(i64, i64, i64)]) -> i64 {
 
     distances.sort_by(|a, b| a.0.cmp(&b.0));
 
-    let top_1000 = &distances[0..10];
+    let top_1000 = &distances[0..1000];
     
     let mut union_graph = DisjointSet::new(junc_boxes.len());
 
@@ -108,7 +107,7 @@ fn part_two(junc_boxes: &[(i64, i64, i64)]) -> i64 {
     distances.sort_by(|a, b| a.0.cmp(&b.0));
 
     let mut union_graph = DisjointSet::new(junc_boxes.len());
-
+    let mut answer = 0;
     for boxes in &distances {
         let id_a = *mapped_boxes.get(&boxes.1.0).unwrap() as usize;
         let id_b = *mapped_boxes.get(&boxes.1.1).unwrap() as usize;
@@ -118,18 +117,13 @@ fn part_two(junc_boxes: &[(i64, i64, i64)]) -> i64 {
 
             if current_size == junc_boxes.len() {
                 println!("The final connecting boxes are: {:?} and {:?}", &boxes.1.0, &boxes.1.1);
+                answer = boxes.1.0.0 * boxes.1.1.0;
+                break;
             }
-        }
-        if union_graph.find(id_a) != union_graph.find(id_b) {
-            union_graph.union(id_a, id_b);
-
-            println!("{} {}", union_graph.size[id_a], union_graph.size[id_b])
         }
     }
     
-    let sum: i64 = union_graph.size[union_graph.size.len() - 3..].iter().fold(1, |acc, x| acc * x) as i64;
-
-    return 12;
+    return answer;
 }
 
 fn calculate_distance(first_box: &(i64, i64, i64), second_box: &(i64, i64, i64)) -> i64 {
@@ -140,7 +134,7 @@ fn calculate_distance(first_box: &(i64, i64, i64), second_box: &(i64, i64, i64))
 }
 
 fn main() {
-    let path = "/Users/alejoseed/Projects/aoc2025/day8/src/1.input";
+    let path = "/home/alejoseed/Projects/aoc2025/day8/src/1.input";
     let lines_result = read_lines(path);
     
     let lines = match lines_result {
@@ -163,9 +157,9 @@ fn main() {
         junc_boxes.push((x,y,z));
     }
 
-    // let first_result = part_one(&junc_boxes);
+    let first_result = part_one(&junc_boxes);
     let second_result = part_two(&junc_boxes);
-    // println!("{}", first_result);
+    println!("{}", first_result);
     println!("{}", second_result);
     
     // println!("STOP HERE");

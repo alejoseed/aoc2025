@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::time::Instant;
 
 fn part_one(ranges: &Vec<(i64, i64)>, foods: &mut HashSet<i64>) -> i64 {
     let mut fresh_foods = 0;
@@ -92,12 +93,18 @@ fn main() {
             }
         }
     }
-
+    let start_time = Instant::now();
     let first_result = part_one(&ranges, &mut foods);
 
-    println!("{}", first_result);
     ranges.sort_by(|a, b| a.0.cmp(&b.0));
-
+    
     let second_result = part_two(&ranges);
+
+    let end_time = Instant::now();
+    let elapsed_total = end_time.duration_since(start_time);
+
+    println!("Total time for results {:?}", elapsed_total);
+    
+    println!("{}", first_result);
     println!("{}", second_result);
 }
