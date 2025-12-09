@@ -31,7 +31,7 @@ impl DisjointSet {
         }
     }
 
-    fn union(&mut self, a: usize, b: usize) {
+    fn union(&mut self, a: usize, b: usize) -> Option<usize>  {
         let root_i = self.find(a);
         let root_j = self.find(b);
         
@@ -39,11 +39,15 @@ impl DisjointSet {
             if self.size[root_i] < self.size[root_j] {
                 self.parent[root_i] = root_j;
                 self.size[root_j] += self.size[root_i];
+                return Some(root_j);
             } else {
                 self.parent[root_j] = root_i;
                 self.size[root_i] += self.size[root_j];
+                return Some(root_i);
+
             }
         }
+        return None;
     }
 }
 
@@ -85,6 +89,49 @@ fn part_one(junc_boxes: &[(i64, i64, i64)]) -> i64 {
     return sum;
 }
 
+fn part_two(junc_boxes: &[(i64, i64, i64)]) -> i64 {
+    let mut mapped_boxes: HashMap<(i64, i64, i64), i64> = HashMap::new();
+
+    for (i, junc_box) in junc_boxes.iter().enumerate() {
+        mapped_boxes.insert(*junc_box, i as i64);
+    }
+
+    let mut distances: Vec<BoxPair> = Vec::new();
+
+    for (i, junc_box) in junc_boxes.iter().enumerate() {
+        for j in i+1..junc_boxes.len() {
+            let distance = calculate_distance(junc_box, &junc_boxes[j]);
+            distances.push((distance, ((*junc_box), (junc_boxes[j]))));
+        }
+    }
+
+    distances.sort_by(|a, b| a.0.cmp(&b.0));
+
+    let mut union_graph = DisjointSet::new(junc_boxes.len());
+
+    for boxes in &distances {
+        let id_a = *mapped_boxes.get(&boxes.1.0).unwrap() as usize;
+        let id_b = *mapped_boxes.get(&boxes.1.1).unwrap() as usize;
+
+        if let Some(new_root_id) = union_graph.union(id_a, id_b) {
+            let current_size = union_graph.size[new_root_id];
+
+            if current_size == junc_boxes.len() {
+                println!("The final connecting boxes are: {:?} and {:?}", &boxes.1.0, &boxes.1.1);
+            }
+        }
+        if union_graph.find(id_a) != union_graph.find(id_b) {
+            union_graph.union(id_a, id_b);
+
+            println!("{} {}", union_graph.size[id_a], union_graph.size[id_b])
+        }
+    }
+    
+    let sum: i64 = union_graph.size[union_graph.size.len() - 3..].iter().fold(1, |acc, x| acc * x) as i64;
+
+    return 12;
+}
+
 fn calculate_distance(first_box: &(i64, i64, i64), second_box: &(i64, i64, i64)) -> i64 {
     let distance = ((second_box.0 - first_box.0).pow(2) + 
                         (second_box.1 - first_box.1).pow(2) + 
@@ -93,7 +140,7 @@ fn calculate_distance(first_box: &(i64, i64, i64), second_box: &(i64, i64, i64))
 }
 
 fn main() {
-    let path = "/home/alejoseed/Projects/aoc2025/day8/src/1.input";
+    let path = "/Users/alejoseed/Projects/aoc2025/day8/src/1.input";
     let lines_result = read_lines(path);
     
     let lines = match lines_result {
@@ -116,9 +163,11 @@ fn main() {
         junc_boxes.push((x,y,z));
     }
 
-    let first_result = part_one(&junc_boxes);
-
-    println!("{}", first_result);
+    // let first_result = part_one(&junc_boxes);
+    let second_result = part_two(&junc_boxes);
+    // println!("{}", first_result);
+    println!("{}", second_result);
+    
     // println!("STOP HERE");
 }
 
